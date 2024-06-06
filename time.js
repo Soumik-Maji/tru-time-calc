@@ -10,25 +10,16 @@ class Time {
     }
 
     show24() {
-        let nextDay = "";
-        if (this.hr >= 24) {
-            this.hr -= 24;
-            nextDay = "Next Day";
-        }
-        return `${nextDay} ${Time.#format(this.hr)}:${Time.#format(this.min)}`;
+        return `${Time.#format(this.hr)}:${Time.#format(this.min)}`;
     }
 
     show12() {
-        let meridian = "am", nextDay = "";
-        if (this.hr >= 24) {
-            this.hr -= 24;
-            nextDay = "Next Day";
-        }
-        if (this.hr >= 12) {
-            this.hr -= 12;
+        let meridian = "am", displayHr = this.hr;
+        if (displayHr >= 12) {
+            displayHr -= 12;
             meridian = "pm";
         }
-        return `${nextDay} ${Time.#format(this.hr)}:${Time.#format(this.min)} ${meridian}`;
+        return `${Time.#format(displayHr)}:${Time.#format(this.min)}${meridian}`;
     }
 
     add(time) {
@@ -47,4 +38,15 @@ class Time {
         return new Time(`${newHr}:${newMin}`);
     }
 
+    greaterThanEqual(time) {    // RECTIFY THIS FUNCTION TO WORK FOR >=
+        // return ((this.hr > time.hr) || (this.hr === time.hr && this.min > time.min));
+        if (this.hr > time.hr)
+            return true;
+        else if (this.hr === time.hr && this.min > time.min)
+            return true;
+    }
+
+    static print(message, start, end) {
+        return `${message}⫸ ${start.show12()} - ${end.show12()} → ${end.sub(start).show24()}`;
+    }
 }

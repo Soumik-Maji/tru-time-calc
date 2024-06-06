@@ -4,26 +4,46 @@ const btnElm = document.getElementById("btn");
 const outputElm = document.getElementById("outputs");
 
 btnElm.addEventListener("click", () => {
+    // INPUTS
     const start = new Time(startElm.value);
     const end = new Time(endElm.value);
 
-    const gap = new Time("00:20");
-    const totalTime = new Time("10:00");
+    // OUTPUT STRING
+    let outputStr = Time.print("Actual", start, end);
 
-    const morningStart = new Time("09:00"),
+    // CONSTANTS
+    const gap = new Time("00:05");
+    const totalDuration = new Time("10:00"); // 10 hrs
+
+    // CALCULATIONS
+    const actualDuration = end.sub(start);
+    // if(actualDuration.greaterThan)
+    /*
+        CHECK IF ACTUAL DURARION IS >= 10 HR THEN SKIP EVERYTING.
+    */
+
+    let fillerDuration = totalDuration.sub(actualDuration);
+
+    const morningStart = new Time("09:00"); // hard start at 9am
+    let morningEnd = morningStart.add(fillerDuration);
+    if (morningEnd.greaterThan(start)) {
         morningEnd = start.sub(gap);
+        const morningDuration = morningEnd.sub(morningStart);
+        outputStr = Time.print("Morning", morningStart, morningEnd) + "\n" + outputStr;
 
-    const actualDuration = end.sub(start),
-        morningDuration = morningEnd.sub(morningStart),
-        totalDuration = actualDuration.add(morningDuration),
-        timeLeft = totalTime.sub(totalDuration);
+        fillerDuration = fillerDuration.sub(morningDuration);
+        const eveningStart = end.add(gap);
+        const eveningEnd = eveningStart.add(fillerDuration);
+        outputStr += "\n" + Time.print("Evening", eveningStart, eveningEnd);
+    }
+    else {
+        /*
+            if morning end is less than actual start & compensates the total duration
+        */
+        outputStr = Time.print("Morning", morningStart, morningEnd) + "\n" + outputStr;
+    }
 
-    const eveningStart = end.add(gap),
-        eveningEnd = eveningStart.add(timeLeft).add(new Time("00:01"));
-
-    outputElm.innerText = `
-    Morning: ${morningStart.show12()} - ${morningEnd.show12()} ~ ${morningDuration.show24()}
-    Actual: ${start.show12()} - ${end.show12()} ~ ${actualDuration.show24()}
-    Evening: ${eveningStart.show12()} - ${eveningEnd.show12()} ~ ${eveningEnd.sub(eveningStart).show24()}
-    `;
+    outputElm.innerText = outputStr;
 });
+
+btnElm.click();

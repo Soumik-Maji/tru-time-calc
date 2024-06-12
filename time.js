@@ -15,38 +15,48 @@ class Time {
 
     show12() {
         let meridian = "am", displayHr = this.hr;
-        if (displayHr >= 12) {
+        if (displayHr > 12) {
             displayHr -= 12;
             meridian = "pm";
         }
         return `${Time.#format(displayHr)}:${Time.#format(this.min)}${meridian}`;
     }
 
-    add(time) {
-        const a = this.hr * 60 + this.min;
-        const b = time.hr * 60 + time.min;
-        const sum = a + b;
-        const newHr = Math.floor(sum / 60), newMin = sum % 60;
+    static print(message, start, end) {
+        return `
+            <tr>
+                <td>${message}</td>
+                <td>${start.show12()}</td>
+                <td>${end.show12()}</td>
+                <td>${end.sub(start).show24()}</td>
+            </tr>
+        `;
+    }
+
+    #toMin() {
+        return this.hr * 60 + this.min;
+    }
+
+    static #toTime(mins) {
+        const newHr = Math.floor(mins / 60), newMin = mins % 60;
         return new Time(`${newHr}:${newMin}`);
+    }
+
+    add(time) {
+        const a = this.#toMin();
+        const b = time.#toMin();
+        const sum = a + b;
+        return Time.#toTime(sum);
     }
 
     sub(time) {
-        const a = this.hr * 60 + this.min;
-        const b = time.hr * 60 + time.min;
-        const sum = a - b;
-        const newHr = Math.floor(sum / 60), newMin = sum % 60;
-        return new Time(`${newHr}:${newMin}`);
+        const a = this.#toMin();
+        const b = time.#toMin();
+        const diff = a - b;
+        return Time.#toTime(diff);
     }
 
-    greaterThanEqual(time) {    // RECTIFY THIS FUNCTION TO WORK FOR >=
-        // return ((this.hr > time.hr) || (this.hr === time.hr && this.min > time.min));
-        if (this.hr > time.hr)
-            return true;
-        else if (this.hr === time.hr && this.min > time.min)
-            return true;
-    }
-
-    static print(message, start, end) {
-        return `${message}⫸ ${start.show12()} - ${end.show12()} → ${end.sub(start).show24()}`;
+    greaterThanEqual(time) {
+        return this.#toMin() >= time.#toMin();
     }
 }

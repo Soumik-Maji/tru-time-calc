@@ -10,16 +10,27 @@
 <body>
     <label>
         Start:
-        <input type="time" id="start" value="10:10">
+        <input type="time" id="start" value="10:53">
     </label>
     <label>
         End:
-        <input type="time" id="end" value="17:20">
+        <input type="time" id="end" value="17:30">
     </label>
     <br>
     <button id="btn">Calculate</button>
     <div id="outputs"></div>
 </body>
+
+<style>
+    th {
+        text-align: left;
+    }
+
+    td:not(:last-child) {
+        padding-right: 20px;
+    }
+</style>
+
 <script src="time.js"></script>
 <script src="main.js"></script>
 

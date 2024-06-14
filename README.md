@@ -1,1 +1,1 @@
-## To calculate work from home durations
+To calculate work from home durations

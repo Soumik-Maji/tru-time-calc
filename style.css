@@ -1,0 +1,23 @@
+input {
+    margin: 10px;
+    margin-left: 0;
+}
+
+#btn {
+    width: 90px;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+#btn:hover {
+    scale: 1.1;
+    transition: 200ms;
+}
+
+th {
+    text-align: left;
+}
+
+td:not(:last-child) {
+    padding-right: 20px;
+}

@@ -4,7 +4,17 @@ const btnElm = document.getElementById("btn");
 const outputElm = document.getElementById("outputs");
 
 btnElm.addEventListener("click", () => {
-    // INPUTS
+    // VALIDATION
+    if (startElm.value === "" || endElm.value === "") {
+        outputElm.innerText = "Incomplete inputs";
+        return;
+    }
+    if (startElm.value > endElm.value) {
+        outputElm.innerText = "Start time should be before End time";
+        return;
+    }
+
+    // INPUTS TO TIME OBJECT
     const start = new Time(startElm.value);
     const end = new Time(endElm.value);
 
@@ -18,8 +28,13 @@ btnElm.addEventListener("click", () => {
     // CALCULATIONS
     const actualDuration = end.sub(start);
 
-    if (actualDuration.greaterThanEqual(totalDuration)) // no need to calculate if total achieved
-        outputStr = "You have done enough already. Take some rest!";
+    if (actualDuration.greaterThanEqual(totalDuration)) { // no need to calculate if total achieved
+        outputStr = `
+            ${end.sub(start).show24()} hours covered.<br>
+            You have done enough already.<br>
+            Take some rest!
+        `;
+    }
     else {
         outputStr = `
             <table>
@@ -52,6 +67,7 @@ btnElm.addEventListener("click", () => {
             const eveningEnd = eveningStart.add(fillerDuration);
             outputStr += Time.print("Evening", eveningStart, eveningEnd);
         }
+        outputStr += "</table>"
     }
     outputElm.innerHTML = outputStr;
 });

@@ -14,11 +14,9 @@ class Time {
     }
 
     show12() {
-        let meridian = "am", displayHr = this.hr;
-        if (displayHr > 12) {
-            displayHr -= 12;
-            meridian = "pm";
-        }
+        const meridian = this.hr >= 12 ? "pm" : "am";
+        const displayHr = this.hr > 12 ? this.hr - 12 : this.hr;
+
         return `${Time.#format(displayHr)}:${Time.#format(this.min)}${meridian}`;
     }
 

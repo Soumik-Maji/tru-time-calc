@@ -1,60 +1,64 @@
 class Time {
+    static #isAllowed = false;
+    #min;
+
     constructor(timeStr) {
-        const [hr, min] = timeStr.split(":");
-        this.hr = parseInt(hr);
-        this.min = parseInt(min);
+        if (!Time.#isAllowed)
+            throw new Error("Cannot create Time object using 'new'. Use the 'create()' function instead.");
+        Time.#isAllowed = false;
+
+        // skipping time string validation as input generally come from HTML time input & inputs I provide as string from main.js
+        const [hr, min] = timeStr.split(":").map(item => parseInt(item));
+        this.#min = hr * 60 + min;
+        return this;
     }
 
+    get time() {
+        return this.#min;
+    }
+
+    // OBJECT CREATION
+    static create(timeStr) {
+        Time.#isAllowed = true;
+        return new Time(timeStr);
+    }
+
+    static #internalCreate(mins) {
+        Time.#isAllowed = true;
+        const tmp = new Time("00:00");
+        tmp.#min = mins;
+        return tmp;
+    }
+
+    // DISPLAY
     static #format(num) {
         return num.toString().padStart(2, "0");
     }
 
     show24() {
-        return `${Time.#format(this.hr)}:${Time.#format(this.min)}`;
+        const hr24 = Math.floor(this.#min / 60);
+        const min24 = this.#min % 60;
+        return `${Time.#format(hr24)}:${Time.#format(min24)}`;
     }
 
     show12() {
-        const meridian = this.hr >= 12 ? "pm" : "am";
-        const displayHr = this.hr > 12 ? this.hr - 12 : this.hr;
+        const hr24 = Math.floor(this.#min / 60);
+        const min24 = this.#min % 60;
 
-        return `${Time.#format(displayHr)}:${Time.#format(this.min)}${meridian}`;
+        const meridian = hr24 >= 12 ? "pm" : "am";
+        const displayHr = hr24 > 12 ? hr24 - 12 : hr24;
+
+        return `${Time.#format(displayHr)}:${Time.#format(min24)} ${meridian}`;
     }
 
-    static print(message, start, end) {
-        return `
-            <tr>
-                <td>${message}</td>
-                <td>${start.show12()}</td>
-                <td>${end.show12()}</td>
-                <td>${end.sub(start).show24()}</td>
-            </tr>
-        `;
-    }
-
-    #toMin() {
-        return this.hr * 60 + this.min;
-    }
-
-    static #toTime(mins) {
-        const newHr = Math.floor(mins / 60), newMin = mins % 60;
-        return new Time(`${newHr}:${newMin}`);
-    }
-
+    // ARITHMETIC LOGIC
     add(time) {
-        const a = this.#toMin();
-        const b = time.#toMin();
-        const sum = a + b;
-        return Time.#toTime(sum);
+        const minSum = this.#min + time.#min;
+        return Time.#internalCreate(minSum);
     }
 
     sub(time) {
-        const a = this.#toMin();
-        const b = time.#toMin();
-        const diff = a - b;
-        return Time.#toTime(diff);
-    }
-
-    greaterThanEqual(time) {
-        return this.#toMin() >= time.#toMin();
+        const minSub = this.#min - time.#min;
+        return Time.#internalCreate(minSub);
     }
 }

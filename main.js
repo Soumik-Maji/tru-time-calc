@@ -1,3 +1,7 @@
+const resetElm = document.getElementById("reset");
+const gapElm = document.getElementById("gap");
+const totalElm = document.getElementById("total");
+const morningStartElm = document.getElementById("morning-start");
 const startElm = document.getElementById("start");
 const endElm = document.getElementById("end");
 const btnElm = document.getElementById("btn");
@@ -5,30 +9,32 @@ const outputElm = document.getElementById("outputs");
 
 btnElm.addEventListener("click", () => {
     // VALIDATION
-    if (startElm.value === "" || endElm.value === "") {
+    if (resetElm.value === "" ||
+        gapElm.value === "" ||
+        totalElm.value === "" ||
+        morningStartElm.value === "" ||
+        startElm.value === "" ||
+        endElm.value === ""
+    ) {
         outputElm.innerText = "Incomplete inputs";
-        return;
-    }
-    if (startElm.value > endElm.value) {
-        outputElm.innerText = "Start time should be before End time";
         return;
     }
 
     // INPUTS TO TIME OBJECT
-    const start = new Time(startElm.value);
-    const end = new Time(endElm.value);
+    const reset = Time.create(resetElm.value);
+    const gap = Time.create(gapElm.value);
+    const total = Time.create(totalElm.value);
+    const morningStart = Time.create(morningStartElm.value);
+    const start = Time.create(startElm.value);
+    const end = Time.create(endElm.value);
 
-    // OUTPUT STRING
-    let outputStr = Time.print("Actual", start, end);
+    // RESETTING TIME IF REQURIED AS PER reset TIME
 
-    // CONSTANTS
-    const gap = new Time("00:05");
-    const totalDuration = new Time("10:01"); // 10 hrs normal & 1 min for safety
 
     // CALCULATIONS
-    const actualDuration = end.sub(start);
+    const actual = end.sub(start);
 
-    if (actualDuration.greaterThanEqual(totalDuration)) { // no need to calculate if total achieved
+    if (actual.time >= total.time) { // no need to calculate if total achieved
         outputStr = `
             ${end.sub(start).show24()} hours covered.<br>
             You have done enough already.<br>
@@ -44,30 +50,42 @@ btnElm.addEventListener("click", () => {
                 <th>End</th>
                 <th>Duration</th>
             </tr>
-        ` + outputStr;
+        ` + getRow("Actual", start, end);
 
-        let fillerDuration = totalDuration.sub(actualDuration);
-
-        const morningStart = new Time("09:00"); // hard start at 9am
-        let morningEnd = new Time("09:00"); // keeping morning duration at zero
+        let fillerDuration = total.sub(actual);
+        let morningEnd = Time.create(morningStart.time); // keeping morning duration at zero
 
         // if morning start + approverBenefitDuration < start then add morning time
-        const approverBenefitDuration = new Time("00:30");  // 30 min
-        if (!morningStart.add(approverBenefitDuration).greaterThanEqual(start)) {
+        const approverBenefitDuration = Time.create("00:40");  // 40 min
+        if (morningStart.add(approverBenefitDuration).time < start.time) {
             morningEnd = morningStart.add(fillerDuration);
 
-            if (morningEnd.greaterThanEqual(start))
+            if (morningEnd.time >= start.time)
                 morningEnd = start.sub(gap);
-            outputStr += Time.print("Morning", morningStart, morningEnd);
+            outputStr += getRow("Morning", morningStart, morningEnd);
         }
         const morningDuration = morningEnd.sub(morningStart);
-        fillerDuration = fillerDuration.sub(morningDuration);
-        if (fillerDuration.greaterThanEqual(new Time("00:01"))) {   // if any filler is left
+        fillerDuration = fillerDuration.sub(morningDuration);   // update the filler duration
+        if (fillerDuration.time > 0) {
             const eveningStart = end.add(gap);
             const eveningEnd = eveningStart.add(fillerDuration);
-            outputStr += Time.print("Evening", eveningStart, eveningEnd);
+            outputStr += getRow("Evening", eveningStart, eveningEnd);
         }
         outputStr += "</table>"
     }
     outputElm.innerHTML = outputStr;
 });
+
+function getRow(message, start, end) {
+    return `
+        <tr>
+            <td>${message}</td>
+            <td>${start.show12()}</td>
+            <td>${end.show12()}</td>
+            <td>${end.sub(start).show24()}</td>
+        </tr>
+    `;
+}
+
+// -- TEST --
+btnElm.click();

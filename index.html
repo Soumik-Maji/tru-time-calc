@@ -5,21 +5,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tru-Time Calculator</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
 </head>
+
 <body>
     <div class="container">
         <h1>Cognizant office time calculator</h1>
+
+        <details open>
+            <summary>Constants</summary>
+            <label>
+                Reset time:
+                <input type="time" id="reset" value="04:00">
+            </label>
+            <label>
+                Time gap:
+                <input type="time" id="gap" value="00:05">
+            </label>
+            <label>
+                Total duration:
+                <input type="time" id="total" value="10:01">
+            </label>
+            <label>
+                Office start time:
+                <input type="time" id="morning-start" value="09:00">
+            </label>
+        </details>
+
+        <hr>
         <label>
             Start:
-            <input type="time" id="start">
+            <input type="time" id="start" value="11:12">
         </label>
         <label>
             End:
-            <input type="time" id="end">
+            <input type="time" id="end" value="19:46">
         </label>
-        <br>
-        <button id="btn">Calculate</button><br>
+
+        <hr>
+        <button id="btn">Calculate</button>
+
+        <hr>
         <div id="outputs"></div>
     </div>
     <div class="footer">Made by Soumik Maji <a href="https://github.com/Soumik-Maji/tru-time-calc">Github</a></div>

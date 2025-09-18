@@ -1,3 +1,5 @@
+/* FOR SOME REASON HOVERING OVER THE minutes NUMBER INPUT IS TRIGGERING THE hours NUMBER INPUT HOVER */
+
 @font-face {
     font-family: ChakraPetch;
     src: url(./assets/Chakra_Petch/ChakraPetch-Regular.ttf);
@@ -74,13 +76,32 @@ a::before {
     display: none;
 }
 
-.container>label {
+.container>label,
+.container>details>label {
     display: flex;
     flex-direction: row;
     align-items: center;
+    cursor: pointer;
 }
 
-input[type='time'] {
+.container>details>summary {
+    cursor: pointer;
+}
+
+/* removes the number input up/down counter buttons */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* On FIREFOX removes the number input up/down counter buttons */
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+input[type='time'],
+input[type='number'] {
     margin: 10px 0px 10px 10px;
     border-top: 0px;
     border-left: 0px;
@@ -96,7 +117,8 @@ input[type='time'] {
     transition: 500ms;
 }
 
-input[type='time']:hover {
+input[type='time']:hover,
+input[type='number']:hover {
     border-bottom: 2px solid yellow;
 }
 
@@ -147,8 +169,18 @@ tr:nth-child(2) {
     color: limegreen;
 }
 
+/* error & error my input stylings */
+.error {
+    color: #f64f59;
+}
+
+.inp {
+    color: whitesmoke;
+}
+
+
 /* Mobile device responsive landscape */
-@media screen and (orientation:landscape) {
+/* @media screen and (orientation:landscape) {
     .container {
         height: 50vh;
         overflow-y: auto;
@@ -163,4 +195,4 @@ tr:nth-child(2) {
     #outputs {
         width: 80vw;
     }
-}
+} */

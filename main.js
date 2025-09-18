@@ -34,7 +34,7 @@ btnElm.addEventListener("click", () => {
         gapMnVal < 0 || gapMnVal > 59
     ) {
         outputElm.innerHTML = `<span class='error'>Invalid time gap input.
-        Hour should be 0 <= <span class='inp'>${gapHrVal}</span> <= 23 and minute should be 0 <= ${gapMnVal} <= 59</span>`;
+        Hour should be 0 <= <span class='inp'>${gapHrVal}</span> <= 23 and minute should be 0 <= <span class='inp'>${gapMnVal}</span> <= 59</span>`;
         return;
     }
 
@@ -45,7 +45,7 @@ btnElm.addEventListener("click", () => {
         totalMnVal < 0 || totalMnVal > 59
     ) {
         outputElm.innerHTML = `<span class='error'>Invalid total duration input.
-        Hour should be 0 <= <span class='inp'>${totalHrVal}</span> <= 23 and minute should be 0 <= ${totalMnVal} <= 59</span>`;
+        Hour should be 0 <= <span class='inp'>${totalHrVal}</span> <= 23 and minute should be 0 <= <span class='inp'>${totalMnVal}</span> <= 59</span>`;
         return;
     }
 
@@ -63,7 +63,10 @@ btnElm.addEventListener("click", () => {
     end = Time.toResetRelative(end, reset);
 
     if (start.time > end.time) {
-        outputElm.innerHTML = `<span class='error'>Start time ${Time.fromResetRelative(start, reset).show12()} is after end time ${Time.fromResetRelative(end, reset).show12()}</span>`;
+        outputElm.innerHTML = `<span class='error'>
+        Start time <span class='inp'>${Time.fromResetRelative(start, reset).show12()}</span> is after end time <span class='inp'>${Time.fromResetRelative(end, reset).show12()}</span><br>
+        Check the inputs or change day reset time (under CONSTANTS) and try again.
+        </span>`;
         return;
     }
 
@@ -72,10 +75,10 @@ btnElm.addEventListener("click", () => {
     const actual = end.sub(start);
 
     if (actual.time >= total.time) { // no need to calculate if total achieved
-        outputStr = `<span class='error'>
+        outputStr = `
             ${actual.show24()} hours covered.<br>
             You have done enough already.<br>
-            Take some rest!</span>
+            Take some rest!
         `;
     }
     else {
@@ -123,5 +126,3 @@ function getRow(message, st, ed, reset) {
         </tr>
     `;
 }
-
-btn.click();

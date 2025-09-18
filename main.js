@@ -1,9 +1,14 @@
 const resetElm = document.getElementById("reset");
-const gapElm = document.getElementById("gap");
-const totalElm = document.getElementById("total");
+
+const gapHrElm = document.getElementById("gap-hr");
+const gapMnElm = document.getElementById("gap-mn");
+const totalHrElm = document.getElementById("total-hr");
+const totalMnElm = document.getElementById("total-mn");
+
 const morningStartElm = document.getElementById("morning-start");
 const startElm = document.getElementById("start");
 const endElm = document.getElementById("end");
+
 const btnElm = document.getElementById("btn");
 const outputElm = document.getElementById("outputs");
 
@@ -11,20 +16,43 @@ btnElm.addEventListener("click", () => {
 
     // INPUT VALIDATION
     if (resetElm.value === "" ||
-        gapElm.value === "" ||
-        totalElm.value === "" ||
+        gapHrElm.value === "" || gapMnElm.value === "" ||
+        totalHrElm.value === "" || totalMnElm.value === "" ||
         morningStartElm.value === "" ||
         startElm.value === "" ||
         endElm.value === ""
     ) {
-        outputElm.innerText = "Incomplete inputs";
+        outputElm.innerHTML = "<span class='error'>Incomplete inputs</span>";
+        return;
+    }
+
+    // gap & total VALIDATION
+    const gapHrVal = parseInt(gapHrElm.value);
+    const gapMnVal = parseInt(gapMnElm.value);
+
+    if (gapHrVal < 0 || gapHrVal > 23 ||
+        gapMnVal < 0 || gapMnVal > 59
+    ) {
+        outputElm.innerHTML = `<span class='error'>Invalid time gap input.
+        Hour should be 0 <= <span class='inp'>${gapHrVal}</span> <= 23 and minute should be 0 <= ${gapMnVal} <= 59</span>`;
+        return;
+    }
+
+    const totalHrVal = parseInt(totalHrElm.value);
+    const totalMnVal = parseInt(totalMnElm.value);
+
+    if (totalHrVal < 0 || totalHrVal > 23 ||
+        totalMnVal < 0 || totalMnVal > 59
+    ) {
+        outputElm.innerHTML = `<span class='error'>Invalid total duration input.
+        Hour should be 0 <= <span class='inp'>${totalHrVal}</span> <= 23 and minute should be 0 <= ${totalMnVal} <= 59</span>`;
         return;
     }
 
     // INPUTS TO TIME OBJECT
     const reset = Time.create(resetElm.value);
-    const gap = Time.create(gapElm.value);
-    const total = Time.create(totalElm.value);
+    const gap = Time.create(`${gapHrVal}:${gapMnVal}`);
+    const total = Time.create(`${totalHrVal}:${totalMnVal}`);
     let morningStart = Time.create(morningStartElm.value);
     let start = Time.create(startElm.value);
     let end = Time.create(endElm.value);
@@ -35,7 +63,7 @@ btnElm.addEventListener("click", () => {
     end = Time.toResetRelative(end, reset);
 
     if (start.time > end.time) {
-        outputElm.innerText = `Start time ${Time.fromResetRelative(start, reset).show12()} is after end time ${Time.fromResetRelative(end, reset).show12()}`;
+        outputElm.innerHTML = `<span class='error'>Start time ${Time.fromResetRelative(start, reset).show12()} is after end time ${Time.fromResetRelative(end, reset).show12()}</span>`;
         return;
     }
 
@@ -44,10 +72,10 @@ btnElm.addEventListener("click", () => {
     const actual = end.sub(start);
 
     if (actual.time >= total.time) { // no need to calculate if total achieved
-        outputStr = `
+        outputStr = `<span class='error'>
             ${actual.show24()} hours covered.<br>
             You have done enough already.<br>
-            Take some rest!
+            Take some rest!</span>
         `;
     }
     else {
@@ -95,3 +123,5 @@ function getRow(message, st, ed, reset) {
         </tr>
     `;
 }
+
+btn.click();

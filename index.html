@@ -20,13 +20,13 @@
             </label>
             <label>
                 Time gap:
-                <!-- <input type="number" id="gap" value="5"> -->
-                <input type="time" id="gap" value="00:05">
+                <input type="number" id="gap-hr" value="0" min="0" max="23"> hours
+                <input type="number" id="gap-mn" value="5" min="0" max="59"> minutes
             </label>
             <label>
                 Total duration:
-                <!-- <input type="text" id="total" value="10:01"> -->
-                <input type="time" id="total" value="10:01">
+                <input type="number" id="total-hr" value="10" min="0" max="23"> hours
+                <input type="number" id="total-mn" value="-1" min="0" max="59"> minutes
             </label>
             <label>
                 Office start time:
@@ -37,11 +37,11 @@
         <hr>
         <label>
             Start:
-            <input type="time" id="start">
+            <input type="time" id="start" value="11:46">
         </label>
         <label>
             End:
-            <input type="time" id="end">
+            <input type="time" id="end" value="16:37">
         </label>
 
         <hr>

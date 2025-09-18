@@ -8,7 +8,8 @@ const btnElm = document.getElementById("btn");
 const outputElm = document.getElementById("outputs");
 
 btnElm.addEventListener("click", () => {
-    // VALIDATION
+
+    // INPUT VALIDATION
     if (resetElm.value === "" ||
         gapElm.value === "" ||
         totalElm.value === "" ||
@@ -28,15 +29,28 @@ btnElm.addEventListener("click", () => {
     const start = Time.create(startElm.value);
     const end = Time.create(endElm.value);
 
-    // RESETTING TIME IF REQURIED AS PER reset TIME
+    const hr24 = 1440;    // 24*60
+    let outputStr = getRow("Actual", start, end);
 
+    // DATA VALIDATION & RESET
+
+
+    // if ((start.time < hr24 && end.time < start.time) // start less than 2400 but end less than start
+    // ) {
+    //     outputStr = `
+    //     reset: ${reset.show12}
+    //     start: ${start.show12}
+    //     end: ${end.show12}
+    //     End time cannot be less than Start time.
+    //     `;
+    // }
 
     // CALCULATIONS
     const actual = end.sub(start);
 
     if (actual.time >= total.time) { // no need to calculate if total achieved
         outputStr = `
-            ${end.sub(start).show24()} hours covered.<br>
+            ${actual.show24()} hours covered.<br>
             You have done enough already.<br>
             Take some rest!
         `;
@@ -50,7 +64,7 @@ btnElm.addEventListener("click", () => {
                 <th>End</th>
                 <th>Duration</th>
             </tr>
-        ` + getRow("Actual", start, end);
+        ` + outputStr;
 
         let fillerDuration = total.sub(actual);
         let morningEnd = Time.create(morningStart.time); // keeping morning duration at zero
@@ -76,16 +90,40 @@ btnElm.addEventListener("click", () => {
     outputElm.innerHTML = outputStr;
 });
 
-function getRow(message, start, end) {
+function applyReset(time, reset) {
+    let mins = time.time;
+    if (mins < reset.time)
+        mins += 24 * 60; // Add 24 hours if before reset time
+    return Time.create(mins - reset.time);
+}
+
+function getRow(message, st, ed) {
     return `
         <tr>
             <td>${message}</td>
-            <td>${start.show12()}</td>
-            <td>${end.show12()}</td>
-            <td>${end.sub(start).show24()}</td>
+            <td>${st.show12()}</td>
+            <td>${ed.show12()}</td>
+            <td>${ed.sub(st).show24()}</td>
         </tr>
     `;
 }
 
-// -- TEST --
-btnElm.click();
+// btn.click();
+
+const s = Time.create("23:46");
+const e = Time.create("01:46");
+const r = Time.create("04:00");
+console.log(s.show24(), e.show24(), r.show24());
+
+const a = Time.toResetRelative(s, r);
+const b = Time.toResetRelative(e, r);
+console.log(a.show24(), b.show24());
+
+console.log(b.sub(a).show24());
+console.log(e.sub(s).show24());
+
+
+/*
+    11:12pm = 23:12
+    01:46am = 25:46
+*/

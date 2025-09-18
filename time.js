@@ -1,21 +1,13 @@
 class Time {
+    static #HOUR24 = 1440; // 24*60 - kind of a final value (DO NOT CHANGE)
     static #isAllowed = false;
     #min;
 
-    constructor(timeStr) {
+    constructor() {
         if (!Time.#isAllowed)
             throw new Error("Cannot create Time object using 'new'. Use the 'create()' function instead.");
         Time.#isAllowed = false;
 
-        const timeCheckRegex = /^(?:[01]?\d|2[0-3]):(?:[0-5]?\d)$/;
-        if (typeof timeStr === "string" && timeCheckRegex.test(timeStr)) {
-            const [hr, min] = timeStr.split(":").map(item => parseInt(item));
-            this.#min = hr * 60 + min;
-        } else if (typeof timeStr === "number" && timeStr >= 0) {
-            this.#min = timeStr;
-        } else {
-            throw new Error(`${timeStr} is invalid time format.`);
-        }
         return this;
     }
 
@@ -26,7 +18,26 @@ class Time {
     // OBJECT CREATION
     static create(timeStr) {
         Time.#isAllowed = true;
-        return new Time(timeStr);
+        const obj = new Time();
+
+        if (typeof timeStr === "string") {
+            const timeCheckRegex = /^(?:[01]?\d|2[0-3]):(?:[0-5]?\d)$/;
+            if (timeCheckRegex.test(timeStr)) {
+                const [hr, min] = timeStr.split(":").map(item => parseInt(item));
+                obj.#min = hr * 60 + min;
+            } else
+                throw new Error(`${timeStr} is invalid time format.`);
+        }
+        else if (typeof timeStr === "number") {
+            if (timeStr >= 0 && timeStr < Time.#HOUR24) // between 0 & 24 hour
+                obj.#min = timeStr;
+            else
+                throw new Error(`0 <= ${timeStr} < ${Time.#HOUR24}. Time provided as minutes is not in valid range.`);
+        }
+        else
+            throw new Error(`Wrong time input.`);
+
+        return obj;
     }
 
     // DISPLAY
@@ -51,13 +62,28 @@ class Time {
     }
 
     // ARITHMETIC LOGIC
-    add(time) {
-        const minSum = this.#min + time.#min;
+    add(other) {
+        const minSum = this.#min + other.#min;
         return Time.create(minSum);
     }
 
-    sub(time) {
-        const minSub = this.#min - time.#min;
+    sub(other) {
+        const minSub = this.#min - other.#min;
         return Time.create(minSub);
+    }
+
+    // RESET RELATIVE LOGIC
+    static toResetRelative(timeObj, reset) {
+        let normalizedTime = timeObj.#min - reset.#min;
+        if (normalizedTime < 0)
+            normalizedTime += Time.#HOUR24;
+        return Time.create(normalizedTime);
+    }
+
+    static fromResetRelative(timeObj, reset) {
+        let normalizedTime = timeObj.#min + reset.#min;
+        if (normalizedTime >= Time.#HOUR24)
+            normalizedTime -= Time.#HOUR24;
+        return Time.create(normalizedTime);
     }
 }
